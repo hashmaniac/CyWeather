@@ -1,4 +1,4 @@
-# Weather_Dashboard
+# CyWeather
 
 ## Description
 
@@ -12,7 +12,7 @@ Some challenges faced during ths project were ensuring the correct interpretatio
 
 ## Installation
 
-No prior installation is required to use the Weather Dashboard application.
+No prior installation is required to use the CyWeather application.
 
 ## Usage
 

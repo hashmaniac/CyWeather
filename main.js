@@ -23,11 +23,8 @@ form.addEventListener("submit", (e) => {
     let url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,relativehumidity_2m,cloudcover_mid,windspeed_120m`;
 
     fetch(url).then(response => response.json()).then(data => {
-        // console.log(data);
-        //get current date
-        let date = data.hourly.time[0].slice(0,10);
-        // Print Out the Date
-        dateToday.textContent = `Today: ${date}`;// Print Out a Key
+     //console.log(data);
+        // Print Out a Key
         key.innerHTML = 'Key : Temp - <i class="fa-solid fa-temperature-half"></i>,  Wind Speed - <i class="fa-solid fa-wind"></i>, Relative Humidity - <i class="fa-solid fa-snowflake"></i>, Cloud Cover - <i class="fa-solid fa-cloud"></i>';
 
         // Put needed response into an array
@@ -39,10 +36,32 @@ form.addEventListener("submit", (e) => {
         let windU = data.hourly_units.windspeed_120m;
         let cloudU = data.hourly_units.cloudcover_mid;
 
+        //Convert UTC time to Local AM-PM time
+        let utc = data.hourly.time;
+        let realDate = new Date();
+        let realDateString = realDate.toLocaleDateString();
+        let localTime = [];
+
+        // Print Out the Date
+        dateToday.textContent = `Today: ${realDateString}`;
+
+
+        //Add 'Z' to time strings for convertion
+        utc.forEach( t => {
+            t += 'Z';
+            let tt = new Date(t);
+            t = tt.toLocaleString();
+            localTime.push(t);
+        });
+
+        // Find index of 6am(start) and 6pm(stop)
+        let h = localTime.indexOf(`${realDateString}, 6:00:00 AM`);
+        let j = h + 13;
+
         // loop through each hour from 6AM - 6PM
-        for (let i=6; i<19; i++) {
+        for (let i=h; i<j; i++) {
             // Weather condition varables
-            let time = dataArray[0][i].slice(11);
+            let time = localTime[i];
             let temp = dataArray[1][i];
             let humidity = dataArray[2][i];
             let cloud = dataArray[3][i];
@@ -79,7 +98,7 @@ form.addEventListener("submit", (e) => {
                                 </div>
                                 <div class="clearfix"></div>
                                 <div class="time">
-                                    <span><h2>${time} (UTC)</h2></span>
+                                    <span><h2>${time}</h2></span>
                                     <span></span>
                                 </div>
                             </div>`;
@@ -88,9 +107,9 @@ form.addEventListener("submit", (e) => {
         }
 
     }).catch(() => {
-        msg.textContent = "Please enter valid coordinates 😩";
+        msg.textContent = "Please check your Internet Connection 😩";
     })
     // reset input values
     form.reset();
     msg.textContent = '';
-})
+});
